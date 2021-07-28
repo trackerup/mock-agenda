@@ -1,0 +1,73 @@
+.image-capture-camera,
+.image-capture-preview {
+  background: #000 !important;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5000;
+  text-align:center;
+
+  i {
+    width: 35px;
+    height: 35px;
+    font-size: 35px;
+  }
+}
+
+.image-capture-capture,
+.image-capture-cancel,
+.image-capture-confirm,
+.image-capture-retake {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  position: absolute;
+  cursor: pointer;
+  z-index: 5000;
+  text-shadow: 0px 0px 15px rgba(193,193,193,0.69);
+}
+
+.image-capture-capture,
+.image-capture-confirm,
+.image-capture-retake {
+  bottom: 20px;
+  transform: translate(-50%, 10%);
+}
+
+.image-capture-capture {
+  font-size: 80px;
+  left: 50%;
+}
+
+.image-capture-confirm {
+  left: 75%;
+}
+
+.image-capture-retake {
+  left: 25%;
+}
+
+.image-capture-cancel {
+  top: 0;
+  left: 0;
+}
+
+.image-capture-video,
+.image-capture-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5000;
+}
+.image-capture-canvas {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
