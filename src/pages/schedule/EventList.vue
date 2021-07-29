@@ -7,7 +7,7 @@
             <th class="orange mdl-data-table__cell--non-numeric background-primary-color"  @click="closeDialogEventSelect()">
               {{ index }}
             </th>
-            <th class="background-primary-color"  @click="closeDialogEventSelect()">
+            <th class="background-primary-color"  @click="$emit('openPlacesEditDialog', index)">
               <span id="nav-icon"><i class="material-icons message">edit</i></span>
             </th>
           </tr>

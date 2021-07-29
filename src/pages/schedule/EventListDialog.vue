@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mdl-dialog full full-fixed dialogPartSelection" id="partsSelectionDialog">
+    <div class="mdl-dialog full full-fixed dialogPartSelection" id="partsSelectionDialog" v-if="!placesEditDialog">
       <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <header class="mdl-layout__header">
           <div class="mdl-layout__header-row">
@@ -23,21 +23,24 @@
               </div>
               <i class="material-icons">search</i>
             </div>
-            <EventList :events="events" :searching="searching" :searchTerm="searchTerm" v-on:on-event-click="clickEvent"></EventList>
+            <EventList :events="events" :searching="searching" :searchTerm="searchTerm" v-on:on-event-click="clickEvent"
+              v-on:openPlacesEditDialog="openPlacesEditDialog"></EventList>
           </div>
         </main>
       </div>
     </div>
+    <PlacesEditDialog v-else v-on:cancel="closePlacesEditDialog" :local="selectedLocal" />
   </div>
 </template>
 
 <script>
 import { like } from '@/utils/'
 import EventList from './EventList'
+import PlacesEditDialog from '@/components/shared/PlacesEditDialog'
 
 export default {
   name: 'EventListDialog',
-  components: { EventList },
+  components: { EventList, PlacesEditDialog },
   props: {
     events: {
       required: true
@@ -47,7 +50,9 @@ export default {
     }
   },
   data: () => ({
-    searchTerm: ''
+    searchTerm: '',
+    placesEditDialog: false,
+    selectedLocal: null
   }),
   mounted () {
     // setTimeout(() => {
@@ -79,6 +84,13 @@ export default {
         }
       })
       return map
+    },
+    openPlacesEditDialog (selectedLocal) {
+      this.selectedLocal = selectedLocal
+      this.placesEditDialog = true
+    },
+    closePlacesEditDialog () {
+      this.placesEditDialog = false
     }
   }
 }
