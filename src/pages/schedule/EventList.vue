@@ -35,7 +35,7 @@ export default {
     events: {
       required: true
     },
-    pesquisando: {
+    searching: {
       required: true
     },
     searchTerm: {

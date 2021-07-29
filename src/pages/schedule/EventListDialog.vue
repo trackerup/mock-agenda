@@ -23,7 +23,7 @@
               </div>
               <i class="material-icons">search</i>
             </div>
-            <EventList :events="events" :pesquisando="pesquisando" :searchTerm="searchTerm" v-on:on-event-click="clickEvent"></EventList>
+            <EventList :events="events" :searching="searching" :searchTerm="searchTerm" v-on:on-event-click="clickEvent"></EventList>
           </div>
         </main>
       </div>
@@ -42,7 +42,7 @@ export default {
     events: {
       required: true
     },
-    pesquisando: {
+    searching: {
       required: true
     }
   },

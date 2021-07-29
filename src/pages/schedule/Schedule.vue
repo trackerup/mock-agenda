@@ -2,7 +2,8 @@
 <div>
   <div class="content-page planning">
     <vue-cal
-      v-if="!pesquisando"
+      v-if="!searching && !appointmentDialog"
+      ref="vuecal"
       :time="true"
       hide-weekends
       :locale="currentLang"
@@ -19,12 +20,13 @@
       events-on-month-view="short"
       :on-event-click="onEventClick"
       :clickToNavigate="true"
+      @cell-click="openAppointmentDialog($event)"
     />
     <div class="botton-actions" :class="[false ? 'space-between' : '', '' == '' ? '' : 'hidden']">
       <div class="col-auto col-actions">
-        <div class="actions" :class="[pesquisando ? 'fab-open' : '']">
-          <button class="mdl-button mdl-button--fab  mdl-button--fab--text button-actions orange" @click="pesquisar" >
-            <span id="nav-icon" v-if="!pesquisando">
+        <div class="actions" :class="[searching ? 'fab-open' : '']">
+          <button class="mdl-button mdl-button--fab  mdl-button--fab--text button-actions orange" @click="doSearch" >
+            <span id="nav-icon" v-if="!searching && !appointmentDialog">
               <i class="material-icons message">search</i>
             </span>
             <span id="nav-icon" v-else>
@@ -38,7 +40,8 @@
       </div>
     </div>
   </div>
-  <EventListDialog v-if="pesquisando" :pesquisando="pesquisando" :events="events" v-on:on-event-click="onEventClick" v-on:cancel="pesquisar" />
+  <EventListDialog v-if="searching" :searching="searching" :events="events" v-on:on-event-click="onEventClick" v-on:cancel="doSearch" />
+  <AppointmentDialog v-if="appointmentDialog" :appointmentStartTime="appointmentStartTime" v-on:cancel="closeAppointmentDialog" v-on:saveAppointment="saveAppointment" />
   <dialog class="mdl-dialog full full-fixed" id="dialogEventSelect">
     <div class="mdl-dialog__content">
       <h5>
@@ -69,15 +72,18 @@ import 'vue-cal/dist/vuecal.css'
 import { mapGetters } from 'vuex'
 import listEvents from './events'
 import EventListDialog from './EventListDialog'
+import AppointmentDialog from './AppointmentDialog'
 
 export default {
   name: 'Schedule',
-  components: {VueCal, EventListDialog},
+  components: {VueCal, EventListDialog, AppointmentDialog},
   data: () => ({
     task: {},
     selectedEvent: {},
     showDialog: false,
-    pesquisando: false,
+    searching: false,
+    appointmentDialog: false,
+    appointmentStartTime: null,
     dailyHours: [
       { from: 12 * 60, to: 13 * 60, class: 'launch-hours' }
     ],
@@ -114,7 +120,8 @@ export default {
       5: this.dailyHours
     }
     this.$dialogPolyfill.doDialog('dialogEventSelect')
-    this.pesquisando = false
+    this.$dialogPolyfill.doDialog('appointmentDialog')
+    this.searching = false
   },
   computed: {
     ...mapGetters({
@@ -136,6 +143,18 @@ export default {
 
       // Prevent navigating to narrower view (default vue-cal behavior).
       if (e) e.stopPropagation()
+    },
+    openAppointmentDialog (event) {
+      this.appointmentStartTime = event
+      this.appointmentDialog = true
+      this.$root.dialogOpen = this.appointmentDialog
+      this.$root.cardContent = this.appointmentDialog
+    },
+    closeAppointmentDialog () {
+      this.appointmentStartTime = null
+      this.appointmentDialog = false
+      this.$root.dialogOpen = this.appointmentDialog
+      this.$root.cardContent = this.appointmentDialog
     },
     executeTask () {
       let start = new Date(this.selectedEvent.start)
@@ -204,10 +223,14 @@ export default {
     closeDialogEventSelect () {
       this.$el.querySelector('#dialogEventSelect').close()
     },
-    pesquisar () {
-      this.pesquisando = !this.pesquisando
-      this.$root.dialogOpen = this.pesquisando
-      this.$root.cardContent = this.pesquisando
+    doSearch () {
+      this.searching = !this.searching
+      this.$root.dialogOpen = this.searching
+      this.$root.cardContent = this.searching
+    },
+    saveAppointment (event) {
+      this.events.push(event)
+      this.closeAppointmentDialog()
     }
   }
 }
