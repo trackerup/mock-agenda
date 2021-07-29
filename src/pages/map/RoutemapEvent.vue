@@ -13,7 +13,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
-import listEvents from '../planning/events'
+import listEvents from '../schedule/events'
 
 export default {
   name: 'Routemap',

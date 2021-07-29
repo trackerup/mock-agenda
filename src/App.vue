@@ -211,7 +211,7 @@ export default {
   beforeMount () {
   },
   mounted () {
-    this.$router.push('/planning')
+    this.$router.push('/schedule')
   },
   destroyed () {
   },

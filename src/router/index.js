@@ -7,7 +7,7 @@ import TasksRoutes from '@/pages/tasks/routes'
 import ChatRoutes from '@/pages/chat/routes'
 import MapRoutes from '@/pages/map/routes'
 import SettingsRoutes from '@/pages/settings/routes'
-import PlanningRoutes from '@/pages/planning/routes'
+import ScheduleRoutes from '@/pages/schedule/routes'
 import Authenticated from '@/middleware/auth'
 import Locale from '@/middleware/locale'
 import store from '../store'
@@ -23,7 +23,7 @@ const router = new Router({
     ...TasksRoutes,
     ...ChatRoutes,
     ...SettingsRoutes,
-    ...PlanningRoutes,
+    ...ScheduleRoutes,
     ...MapRoutes
   ]
 })

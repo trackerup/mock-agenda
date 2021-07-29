@@ -306,6 +306,24 @@ dialog {
   }
 }
 
+.background-primary-color {
+  background-color: $primary-color;
+  color: $secondary-color;
+}
+.background-primary-color-variant {
+  background-color: $primary-color-variant;
+}
+.background-secondary-color {
+  background-color: $secondary-color;
+}
+.background-secondary-color-variant {
+  background-color: $secondary-color-variant;
+}
+.background-secondary-color-light {
+  background-color: $secondary-color-light;
+  color: $secondary-color-variant;
+}
+
 .mdl-button--fab {
   background: $secondary-color !important;
   color: #fff;
@@ -1581,7 +1599,6 @@ h5.pageTitle {
     }
 
     .mdl-dialog__content {
-      padding: 0;
       color: rgba(0, 0, 0, 0.6);
       letter-spacing: 0.018em;
       font-size: 14px;
@@ -2977,4 +2994,8 @@ button.grey {
       }
     }
   }
+}
+
+.mdl-data-table {
+  width: 100%;
 }

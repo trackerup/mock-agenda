@@ -99,12 +99,12 @@ export default {
       this.responses = this.currentTask.responses
       this.$forceUpdate()
     },
-    async getForms () {
+    getForms () {
       this.forms = []
       try {
-        let taskForms = JSON.parse(this.task.forms)
+        let taskForms = JSON.parse(this.currentTask.forms)
         for (let idForm in taskForms) {
-          this.forms.push(await formsEntity.getOneFormById(taskForms[idForm]))
+          this.forms.push(formsEntity.getOneFormById(taskForms[idForm]))
         }
       } catch (err) {
         console.log(err)

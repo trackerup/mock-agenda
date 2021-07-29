@@ -36,7 +36,13 @@ export default {
     MessageButton
   },
   data () {
-    return { }
+    return {
+      user: {
+        route: {
+          status: 0
+        }
+      }
+    }
   },
   methods: {
     async changeStatus () {
@@ -57,8 +63,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      currentTask: 'task/currentTask',
-      user: 'user/user'
+      currentTask: 'task/currentTask'
     })
   },
   mounted () { },

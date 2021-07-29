@@ -3,7 +3,7 @@
     <TaskTitle :task="currentTask" ></TaskTitle>
     <TaskDescription :task="currentTask" />
     <div class="bottom-bar">
-      <button @click="changeStatus()" v-if="user && user.route.status != '1'"
+      <button @click="changeStatus()"
               class="mdl-button mdl-button--raised mdl-button--accent orange whited">
         <i class="material-icons">near_me</i>{{ $t('Iniciar Deslocamento') }}
       </button>

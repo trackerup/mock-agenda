@@ -1,13 +1,6 @@
 <template>
 <div>
   <div class="content-page planning">
-    <div class="textfield-with-icon" v-if="pesquisando">
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-        <input ref="input-pesquisa" class="mdl-textfield__input" type="text" id="passwordInput" v-model="searchTerm">
-        <label class="mdl-textfield__label" for="passwordInput">{{ $t('Pesquisa') }} </label>
-      </div>
-      <i class="material-icons">search</i>
-    </div>
     <vue-cal
       v-if="!pesquisando"
       :time="true"
@@ -27,37 +20,10 @@
       :on-event-click="onEventClick"
       :clickToNavigate="true"
     />
-    <div class="mdl-list" v-else>
-      <template v-for="(locais, index) in groupByLocalEvents" >
-        <div class="mdl-card expand" :key="index"  v-if="isVisible(index)">
-          <div class="mdl-card__title">
-            <i class="material-icons">person</i>
-            <h5 class="mdl-card__title-text">{{ index }}</h5>
-          </div>
-          <div class="mdl-card__supporting-text">
-            <ul class="mdl-list">
-              <template  v-for="event in locais" >
-                <li class="mdl-list__item" :key="event.id">
-                  <span class="mdl-list__item-primary-content">
-                    <strong>{{ event.start | formatDateTime }}</strong>
-                  </span>
-                </li>
-              </template>
-            </ul>
-          </div>
-          <div class="mdl-card__actions mdl-card--border">
-            <button type="button" class="mdl-button close grey" @click="closeDialogEventSelect()">
-              {{ $t('Editar') }}
-              <i class="material-icons">edit</i>
-            </button>
-          </div>
-        </div>
-      </template>
-    </div>
     <div class="botton-actions" :class="[false ? 'space-between' : '', '' == '' ? '' : 'hidden']">
       <div class="col-auto col-actions">
         <div class="actions" :class="[pesquisando ? 'fab-open' : '']">
-          <button class="mdl-button mdl-button--fab  mdl-button--fab--text button-actions orange" @click="pesquisar()" >
+          <button class="mdl-button mdl-button--fab  mdl-button--fab--text button-actions orange" @click="pesquisar" >
             <span id="nav-icon" v-if="!pesquisando">
               <i class="material-icons message">search</i>
             </span>
@@ -72,17 +38,18 @@
       </div>
     </div>
   </div>
+  <EventListDialog v-if="pesquisando" :pesquisando="pesquisando" :events="events" v-on:on-event-click="onEventClick" v-on:cancel="pesquisar" />
   <dialog class="mdl-dialog full full-fixed" id="dialogEventSelect">
     <div class="mdl-dialog__content">
       <h5>
         <span>{{ selectedEvent.title }}</span>
-        <strong>{{ selectedEvent.start && selectedEvent.start.format('DD/MM/YYYY') }}</strong>
+        <strong>{{ selectedEvent.start | formatDateTime }}</strong>
       </h5>
       <p v-html="selectedEvent.contentFull"/>
       <strong>Event details:</strong>
       <ul>
-        <li>Event starts at: {{ selectedEvent.start && selectedEvent.start.formatTime() }}</li>
-        <li>Event ends at: {{ selectedEvent.end && selectedEvent.end.formatTime() }}</li>
+        <li>Event starts at: {{ selectedEvent.start | formatDateTime }}</li>
+        <li>Event ends at: {{ selectedEvent.end | formatDateTime }}</li>
       </ul>
       <div class="mdl-dialog__actions">
         <button type="button" class="mdl-button orange" @click="executeTask()">{{ $t('Executar') }}</button>
@@ -100,18 +67,17 @@ import 'vue-cal/dist/i18n/pt-br.js'
 import 'vue-cal/dist/i18n/es.js'
 import 'vue-cal/dist/vuecal.css'
 import { mapGetters } from 'vuex'
-import { like } from '@/utils/'
 import listEvents from './events'
+import EventListDialog from './EventListDialog'
 
 export default {
-  name: 'Planning',
-  components: {VueCal},
+  name: 'Schedule',
+  components: {VueCal, EventListDialog},
   data: () => ({
     task: {},
     selectedEvent: {},
     showDialog: false,
     pesquisando: false,
-    searchTerm: '',
     dailyHours: [
       { from: 12 * 60, to: 13 * 60, class: 'launch-hours' }
     ],
@@ -134,9 +100,8 @@ export default {
     events: listEvents
   }),
   mounted () {
-    this.$store.dispatch('locals/getLocals', {})
     this.$emit('changeParams', {
-      pageTitle: this.$t('Planejamento'),
+      pageTitle: this.$t('Agenda'),
       mapMenu: true,
       backMenu: true,
       routeMap: '/routeMapEvent'
@@ -162,9 +127,6 @@ export default {
         default:
           return this.lang
       }
-    },
-    groupByLocalEvents () {
-      return this.groupBy(this.events, event => event.idLocal)
     }
   },
   methods: {
@@ -173,9 +135,12 @@ export default {
       this.$el.querySelector('#dialogEventSelect').showModal()
 
       // Prevent navigating to narrower view (default vue-cal behavior).
-      e.stopPropagation()
+      if (e) e.stopPropagation()
     },
     executeTask () {
+      let start = new Date(this.selectedEvent.start)
+      let end = new Date(this.selectedEvent.end)
+
       this.task = {
         agendada: null,
         automatica: '0',
@@ -184,7 +149,7 @@ export default {
         comentario: this.selectedEvent.title,
         created_at: null,
         criado: new Date().toJSON().slice(0, 19).replace('T', ' '),
-        dataTarefa: this.selectedEvent.start.toJSON().slice(0, 10),
+        dataTarefa: start.toJSON().slice(0, 10),
         deletada: '0',
         deleted_at: null,
         destino: null,
@@ -206,13 +171,13 @@ export default {
         modificado: null,
         nome: this.selectedEvent.title,
         pic: null,
-        planedEnd: `{"hora":"${this.selectedEvent.start.toJSON().slice(10, 2)}","minuto":"${this.selectedEvent.start.toJSON().slice(12, 2)}"}`,
-        planedStart: `{"hora":"${this.selectedEvent.end.toJSON().slice(10, 2)}","minuto":"${this.selectedEvent.end.toJSON().slice(12, 2)}"}`,
+        planedEnd: `{"hora":"${start.toJSON().slice(10, 2)}","minuto":"${start.toJSON().slice(12, 2)}"}`,
+        planedStart: `{"hora":"${end.toJSON().slice(10, 2)}","minuto":"${end.toJSON().slice(12, 2)}"}`,
         recorrente: null,
         responses: [],
         rota: 9034,
         sinc: 1,
-        status: 'pendente',
+        status: this.selectedEvent.tipo == 3 ? 'travelDone' : 'pendente',
         termino: null,
         travelEnd: null,
         travelLat: null,
@@ -240,28 +205,9 @@ export default {
       this.$el.querySelector('#dialogEventSelect').close()
     },
     pesquisar () {
-      const _self = this
       this.pesquisando = !this.pesquisando
-      setTimeout(() => {
-        _self.$refs['input-pesquisa'].focus()
-        _self.$refs['input-pesquisa'].parentNode.classList.add('is-dirty')
-      }, 100)
-    },
-    isVisible (index) {
-      return (this.searchTerm == '' || like('%' + this.searchTerm.toUpperCase() + '%', index.toUpperCase()))
-    },
-    groupBy (list, keyGetter) {
-      const map = {}
-      list.forEach((item) => {
-        const key = keyGetter(item)
-        const collection = map[key]
-        if (!collection) {
-          map[key] = [item]
-        } else {
-          collection.push(item)
-        }
-      })
-      return map
+      this.$root.dialogOpen = this.pesquisando
+      this.$root.cardContent = this.pesquisando
     }
   }
 }
