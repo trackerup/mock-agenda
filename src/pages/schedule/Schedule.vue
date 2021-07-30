@@ -2,7 +2,7 @@
 <div>
   <div class="content-page planning">
     <vue-cal
-      v-if="!searching && !appointmentDialog"
+      v-show="!searching && !appointmentDialog"
       ref="vuecal"
       :time="true"
       hide-weekends
@@ -14,7 +14,7 @@
       :special-hours="specialHours"
       xsmall
       today-button
-      active-view="day"
+      :active-view="activeView"
       :events="events"
       events-count-on-year-view
       events-on-month-view="short"
@@ -40,27 +40,17 @@
       </div>
     </div>
   </div>
-  <EventListDialog v-if="searching" :searching="searching" :events="events" v-on:on-event-click="onEventClick" v-on:cancel="doSearch" />
-  <AppointmentDialog v-if="appointmentDialog" :appointmentStartTime="appointmentStartTime" v-on:cancel="closeAppointmentDialog" v-on:saveAppointment="saveAppointment" />
-  <dialog class="mdl-dialog full full-fixed" id="dialogEventSelect">
-    <div class="mdl-dialog__content">
-      <h5>
-        <span>{{ selectedEvent.title }}</span>
-        <strong>{{ selectedEvent.start | formatDateTime }}</strong>
-      </h5>
-      <p v-html="selectedEvent.contentFull"/>
-      <strong>Event details:</strong>
-      <ul>
-        <li>Event starts at: {{ selectedEvent.start | formatDateTime }}</li>
-        <li>Event ends at: {{ selectedEvent.end | formatDateTime }}</li>
-      </ul>
-      <div class="mdl-dialog__actions">
-        <button type="button" class="mdl-button orange" @click="executeTask()">{{ $t('Executar') }}</button>
-        <button type="button" class="mdl-button red" @click="deleteSelectedEvent()">{{ $t('Exluir') }}</button>
-        <button type="button" class="mdl-button close grey" @click="closeDialogEventSelect()">{{ $t('Cancelar') }}</button>
-      </div>
-    </div>
-  </dialog>
+  <EventListDialog v-if="searching" :searching="searching" :events="events" v-on:on-event-click="onEventClick" v-on:cancel="closeDialogs" />
+  <AppointmentDialog v-if="appointmentDialog" :appointmentStartTime="appointmentStartTime" v-on:cancel="closeDialogs" v-on:saveAppointment="saveAppointment" />
+  <EventDetailDialog
+    v-if="eventDetailDialog"
+    :event="selectedEvent"
+    :events="events"
+    v-on:saveEvent="saveEvent"
+    v-on:cancel="closeDialogs"
+    v-on:deleteSelectedEvent="deleteSelectedEvent"
+    v-on:executeTask="executeTask"
+  />
 </div>
 </template>
 
@@ -73,10 +63,11 @@ import { mapGetters } from 'vuex'
 import listEvents from './events'
 import EventListDialog from './EventListDialog'
 import AppointmentDialog from './AppointmentDialog'
+import EventDetailDialog from './EventDetailDialog'
 
 export default {
   name: 'Schedule',
-  components: {VueCal, EventListDialog, AppointmentDialog},
+  components: {VueCal, EventListDialog, AppointmentDialog, EventDetailDialog},
   data: () => ({
     task: {},
     selectedEvent: {},
@@ -84,6 +75,8 @@ export default {
     searching: false,
     appointmentDialog: false,
     appointmentStartTime: null,
+    eventDetailDialog: false,
+    activeView: 'day',
     dailyHours: [
       { from: 12 * 60, to: 13 * 60, class: 'launch-hours' }
     ],
@@ -119,8 +112,6 @@ export default {
       4: this.dailyHours,
       5: this.dailyHours
     }
-    this.$dialogPolyfill.doDialog('dialogEventSelect')
-    this.$dialogPolyfill.doDialog('appointmentDialog')
     this.searching = false
   },
   computed: {
@@ -138,23 +129,36 @@ export default {
   },
   methods: {
     onEventClick (event, e) {
-      this.selectedEvent = event
-      this.$el.querySelector('#dialogEventSelect').showModal()
+      this.selectedEvent = this.events.find(ele => { return ele.id == event.id })
+      this.selectedEvent.class = this.selectedEvent.class + ' selectedEvent'
+      this.eventDetailDialog = true
+      this.$root.dialogOpen = true
+      this.$root.cardContent = true
 
       // Prevent navigating to narrower view (default vue-cal behavior).
       if (e) e.stopPropagation()
     },
     openAppointmentDialog (event) {
-      this.appointmentStartTime = event
-      this.appointmentDialog = true
-      this.$root.dialogOpen = this.appointmentDialog
-      this.$root.cardContent = this.appointmentDialog
+      if (this.$refs.vuecal.view.id != 'month') {
+        this.appointmentStartTime = event
+        this.appointmentDialog = true
+        this.$root.dialogOpen = true
+        this.$root.cardContent = true
+      }
     },
-    closeAppointmentDialog () {
+    closeDialogs () {
       this.appointmentStartTime = null
       this.appointmentDialog = false
-      this.$root.dialogOpen = this.appointmentDialog
-      this.$root.cardContent = this.appointmentDialog
+
+      this.eventDetailDialog = false
+      if (this.selectedEvent.class) {
+        this.selectedEvent.class = this.selectedEvent.class.split(' ')[0]
+      }
+
+      this.searching = false
+
+      this.$root.dialogOpen = false
+      this.$root.cardContent = false
     },
     executeTask () {
       let start = new Date(this.selectedEvent.start)
@@ -211,6 +215,7 @@ export default {
         ]
       }
       this.$store.dispatch('task/setCurrentTask', {task: this.task})
+      this.closeDialogs()
       this.$router.push(`/task/${this.selectedEvent.id}`)
     },
     deleteSelectedEvent () {
@@ -218,10 +223,7 @@ export default {
       this.events = this.events.filter(ele => {
         return ele.id != _self.selectedEvent.id
       })
-      this.$el.querySelector('#dialogEventSelect').close()
-    },
-    closeDialogEventSelect () {
-      this.$el.querySelector('#dialogEventSelect').close()
+      this.closeDialogs()
     },
     doSearch () {
       this.searching = !this.searching
@@ -230,7 +232,17 @@ export default {
     },
     saveAppointment (event) {
       this.events.push(event)
-      this.closeAppointmentDialog()
+      this.closeDialogs()
+    },
+    saveEvent (event) {
+      this.events.forEach(ele => {
+        if (ele.id == event.id) {
+          ele.start = event.start
+          ele.end = event.end
+          ele.class = event.class
+        }
+      })
+      this.closeDialogs()
     }
   }
 }

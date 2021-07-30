@@ -7,7 +7,10 @@ export default {
   state: {
     user: window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : null,
     token: null,
-    coords: null,
+    coords: {
+      latitude: -23.591016448606203,
+      longitude: -46.62981223323096
+    },
     startBackground: window.localStorage.getItem('startBackground') ? window.localStorage.getItem('startBackground') : 'false'
   },
 

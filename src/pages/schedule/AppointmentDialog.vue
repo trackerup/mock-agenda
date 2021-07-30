@@ -36,6 +36,12 @@
                 <label class="mdl-textfield__label" for="comment">{{ $t('Comentário') }} </label>
               </div>
             </div>
+            <button class="mdl-button mdl-button orange" @click="selectGeo" v-if="!selectingGeo">
+              {{ $t('Definir Local') }}
+            </button>
+            <div v-show="selectingGeo">
+              <Map :search="true" ref="Map" v-on:confirmPos="confirmPosMap"/>
+            </div>
             <div class="mdl-card__actions mdl-card--border">
               <button class="mdl-button mdl-button orange" @click="saveAppointment">
                 {{ $t('Salvar') }}
@@ -52,24 +58,31 @@
 </template>
 
 <script>
+import Map from '@/components/shared/Map'
 export default {
   name: 'AppointmentDialog',
-  components: {},
+  components: { Map },
   props: {
     appointmentStartTime: {
       required: true
     }
   },
   data: () => ({
+    mapName: 'task-map',
+    map: null,
+    mapOptions: null,
     startDateTime: null,
     endDateTime: null,
-    comment: ''
+    comment: '',
+    selectingGeo: false,
+    location: false
   }),
   beforeMount () {
     const _date = this.roundTimeQuarterHour(this.appointmentStartTime)
     const _dateEnd = new Date(_date.getTime() + 30 * 60000)
     this.setDates(_date, _dateEnd)
     this.comment = ''
+    this.selectingGeo = false
   },
   computed: {},
   methods: {
@@ -77,7 +90,7 @@ export default {
       var timeToReturn = new Date(time)
       timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000)
       timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60)
-      timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 15) * 15)
+      timeToReturn.setMinutes(Math.abs(Math.round(timeToReturn.getMinutes() / 15) - 1) * 15)
       return timeToReturn
     },
     saveAppointment () {
@@ -97,8 +110,8 @@ export default {
           title: this.comment ? this.comment : 'Apontamento',
           content: '<i class="material-icons">bookmark</i>',
           class: 'background-primary-color',
-          latitude: null,
-          longitude: null,
+          latitude: this.location ? this.location.lat() : null,
+          longitude: this.location ? this.location.lng() : null,
           tipo: 2
         }
         )
@@ -123,6 +136,12 @@ export default {
         _date = new Date(_dateEnd.getTime() - 30 * 60000)
       }
       this.setDates(_date, _dateEnd)
+    },
+    selectGeo () {
+      this.selectingGeo = true
+    },
+    confirmPosMap (location) {
+      this.location = location.result.geometry.location
     }
   }
 }

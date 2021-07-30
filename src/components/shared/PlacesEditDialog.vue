@@ -241,4 +241,5 @@ export default {
 .container-period .textfield {
   width: 45%;
 }
+
 </style>
