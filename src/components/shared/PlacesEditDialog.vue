@@ -236,6 +236,7 @@ export default {
 <style lang="scss">
 .container-period {
   display: flex;
+  justify-content: space-between;
 }
 .container-period .textfield {
   width: 45%;

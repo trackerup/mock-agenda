@@ -13,7 +13,7 @@ export default [
     end: today + ' 09:00',
     title: 'Médico 01',
     content: '<i class="material-icons">person</i>',
-    class: 'background-secondary-color-light',
+    class: 'background-secondary-color',
     latitude: -23.58548212133505,
     longitude: -46.63585803319513,
     tipo: 1
@@ -37,7 +37,7 @@ export default [
     end: today + ' 11:00',
     title: 'Médico 03',
     content: '<i class="material-icons">person</i>',
-    class: 'background-secondary-color-light',
+    class: 'background-secondary-color',
     latitude: -23.59388070622159,
     longitude: -46.62560117697458,
     tipo: 1
@@ -49,7 +49,7 @@ export default [
     end: today + ' 12:00',
     title: 'PDV 01',
     content: '<i class="material-icons">home</i>',
-    class: 'background-secondary-color-light',
+    class: 'background-secondary-color',
     latitude: -23.597134318127754,
     longitude: -46.63015303624406,
     tipo: 1

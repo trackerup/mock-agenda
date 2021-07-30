@@ -2,12 +2,12 @@
   <div class="mdl-data-table-container">
     <template v-for="(locais, index) in groupByLocalEvents">
       <table class="mdl-data-table mdl-shadow--2dp" :key="index" v-if="isVisible(index)">
-        <thead class="">
-          <tr>
-            <th class="orange mdl-data-table__cell--non-numeric background-primary-color"  @click="closeDialogEventSelect()">
+        <thead class="background-secondary-color">
+          <tr @click="$emit('openPlacesEditDialog', index)">
+            <th class="orange mdl-data-table__cell--non-numeric" >
               {{ index }}
             </th>
-            <th class="background-primary-color"  @click="$emit('openPlacesEditDialog', index)">
+            <th class=""  >
               <span id="nav-icon"><i class="material-icons message">edit</i></span>
             </th>
           </tr>

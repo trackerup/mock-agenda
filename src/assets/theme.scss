@@ -10,7 +10,7 @@ $primary-color: #f26829;
 $primary-color-variant: #f2682999;
 $secondary-color: #1a3444;
 $secondary-color-variant: #1a3444d9;
-$secondary-color-light: #c5c5c5;
+$secondary-color-light: #FFF;
 
 @mixin col($col: 1) {
   @if $col==1 {
@@ -286,42 +286,26 @@ dialog {
     #currentDate::-webkit-clear-button {
       display: none;
     }
-    .background-primary-color {
-      background-color: $primary-color;
-      color: $secondary-color;
-    }
-    .background-primary-color-variant {
-      background-color: $primary-color-variant;
-    }
-    .background-secondary-color {
-      background-color: $secondary-color;
-    }
-    .background-secondary-color-variant {
-      background-color: $secondary-color-variant;
-    }
-    .background-secondary-color-light {
-      background-color: $secondary-color-light;
-      color: $secondary-color-variant;
-    }
   }
-}
-
-.background-primary-color {
-  background-color: $primary-color;
-  color: $secondary-color;
-}
-.background-primary-color-variant {
-  background-color: $primary-color-variant;
-}
-.background-secondary-color {
-  background-color: $secondary-color;
-}
-.background-secondary-color-variant {
-  background-color: $secondary-color-variant;
-}
-.background-secondary-color-light {
-  background-color: $secondary-color-light;
-  color: $secondary-color-variant;
+  .background-primary-color {
+    background-color: $primary-color;
+    color: $secondary-color-light;
+  }
+  .background-primary-color-variant {
+    background-color: $primary-color-variant;
+  }
+  .background-secondary-color {
+    background-color: $secondary-color;
+    color: $secondary-color-light;
+  }
+  .background-secondary-color-variant {
+    background-color: $secondary-color-variant;
+    color: $secondary-color;
+  }
+  .background-secondary-color-light {
+    background-color: $secondary-color-light;
+    color: $secondary-color-variant;
+  }
 }
 
 .mdl-button--fab {
