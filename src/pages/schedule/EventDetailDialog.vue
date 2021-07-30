@@ -170,8 +170,8 @@ export default {
     saveEvent () {
       let editedEvent = Object.assign({}, this.event)
       this.$emit('saveEvent', Object.assign(editedEvent, {
-        start: new Date(this.date + 'T' + this.start),
-        end: new Date(this.date + 'T' + this.end),
+        start: this.date + ' ' + this.start,
+        end: this.date + ' ' + this.end,
         class: 'background-primary-color'
       }))
     },

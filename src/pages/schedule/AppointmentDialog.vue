@@ -15,40 +15,48 @@
           </div>
         </header>
         <main class="mdl-layout__content">
-          <div class="page-content mdl-card">
-            <div class="textfield-with-icon">
+          <div class="mdl-card mdl-card-no-padding">
+            <div class="mdl-card__title background-primary-color">
+              <h2 class="mdl-card__title-text">
+                {{ $t('Novo apontamento') }}
+              </h2>
+            </div>
+            <div class="mdl-card__supporting-text mdl-card--expand">
+              <div class="textfield">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input ref="input-pesquisa" class="mdl-textfield__input" type="datetime-local" id="startDateTime" v-model="startDateTime"/>
-                    <label class="mdl-textfield__label" for="startDateTime">{{ $t('Data Inícial') }} </label>
+                  <input ref="input-pesquisa" class="mdl-textfield__input" type="text" id="comment" v-model="comment" />
+                  <label class="mdl-textfield__label" for="comment">{{ $t('Comentário') }} </label>
+                </div>
+              </div>
+              <div class="textfield-with-icon">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                  <input ref="input-pesquisa" class="mdl-textfield__input" type="datetime-local" id="startDateTime" v-model="startDateTime" />
+                  <label class="mdl-textfield__label" for="startDateTime">{{ $t('Data Inícial') }} </label>
                 </div>
                 <i class="material-icons">calendar</i>
-            </div>
-            <div class="textfield-with-icon">
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                <input ref="input-pesquisa" class="mdl-textfield__input" type="datetime-local" id="endDateTime" v-model="endDateTime"/>
-                <label class="mdl-textfield__label" for="endDateTime">{{ $t('Data Final') }} </label>
               </div>
-              <i class="material-icons">calendar</i>
-            </div>
-            <div class="textfield">
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                <input ref="input-pesquisa" class="mdl-textfield__input" type="text" id="comment" v-model="comment" />
-                <label class="mdl-textfield__label" for="comment">{{ $t('Comentário') }} </label>
+              <div class="textfield-with-icon">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                  <input ref="input-pesquisa" class="mdl-textfield__input" type="datetime-local" id="endDateTime" v-model="endDateTime" />
+                  <label class="mdl-textfield__label" for="endDateTime">{{ $t('Data Final') }} </label>
+                </div>
+                <i class="material-icons">calendar</i>
               </div>
-            </div>
-            <button class="mdl-button mdl-button orange" @click="selectGeo" v-if="!selectingGeo">
-              {{ $t('Definir Local') }}
-            </button>
-            <div v-show="selectingGeo">
-              <Map :search="true" ref="Map" v-on:confirmPos="confirmPosMap"/>
+              <button class="mdl-button mdl-button orange" @click="selectGeo" v-if="!selectingGeo">
+                {{ $t('Definir Local') }}
+              </button>
+              <div v-show="selectingGeo">
+                <Map :search="true" ref="Map" v-on:confirmPos="confirmPosMap" />
+              </div>
             </div>
             <div class="mdl-card__actions mdl-card--border">
-              <button class="mdl-button mdl-button orange" @click="saveAppointment">
-                {{ $t('Salvar') }}
-              </button>
-              <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" @click="$emit('cancel')">
-                {{ $t('Cancelar') }}
-              </a>
+              <div class="flex-start" >
+                <button type="button" class="mdl-button orange" @click="saveAppointment">{{ $t('Salvar') }}</button>
+                <div class="mdl-layout-spacer"></div>
+              </div>
+              <div class="flex-end">
+                <button type="button" class="mdl-button red" @click="$emit('cancel')">{{ $t('Cancelar') }}</button>
+              </div>
             </div>
           </div>
         </main>
@@ -113,8 +121,7 @@ export default {
           latitude: this.location ? this.location.lat() : null,
           longitude: this.location ? this.location.lng() : null,
           tipo: 2
-        }
-        )
+        })
       }
     },
     setDates (dateStart, dateEnd) {
@@ -148,4 +155,11 @@ export default {
 </script>
 
 <style lang="scss">
+.mdl-card__actions {
+  display: flex;
+}
+.app-content .mdl-card.mdl-card-no-padding {
+  padding: 0;
+  border: solid 0px rgba(0, 0, 0, 0.12);
+}
 </style>

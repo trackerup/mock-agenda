@@ -88,7 +88,7 @@ export default {
       }
 
       var tasks = this.tasks.filter(ele => {
-        return (ele.start.slice(0, 10) == _self.today) && ele.tipo == 1
+        return (new Date(ele.start).toJSON().slice(0, 10) == _self.today) && ele.tipo == 1
       })
 
       tasks = tasks.sort(function (a, b) {
