@@ -33,7 +33,7 @@
         </main>
       </div>
     </div>
-    <PlacesEditDialog v-else v-on:cancel="closePlacesEditDialog" :local="selectedLocal" />
+    <PlacesEditDialog v-else v-on:cancel="closePlacesEditDialog" v-on:savePlace="savePlace" :local="selectedLocal" />
   </div>
 </template>
 
@@ -107,6 +107,13 @@ export default {
     },
     closePlacesEditDialog () {
       this.placesEditDialog = false
+    },
+    savePlace () {
+      this.placesEditDialog = false
+      this.$bus.$emit('showSnackBar', {
+        message: this.$t('Alterações salvas com sucesso!'),
+        duration: 2000
+      })
     },
     doFilter (filter) {
       this.filter[filter] = !this.filter[filter]

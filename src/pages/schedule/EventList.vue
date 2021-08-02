@@ -4,19 +4,23 @@
       <table class="mdl-data-table mdl-shadow--2dp" :key="index" v-if="isVisible(locais, index)">
         <thead class="background-secondary-color">
           <tr @click="$emit('openPlacesEditDialog', index)">
-            <th class="orange mdl-data-table__cell--non-numeric" >
-              {{ index }}
-            </th>
-            <th class="">
-              {{ getDistance(index) | distanceMask}}
-              <span id="nav-icon"><i class="material-icons message">edit</i></span>
+            <th class="orange mdl-data-table__cell--non-numeric" colspan="2">
+              <div class="flex-box">
+                <div class="flex-box flex-column">
+                  {{ index }}
+                  <small>{{ getDistance(index) | distanceMask}}</small>
+                </div>
+                <span class="edit-icon"><i class="material-icons">edit</i></span>
+              </div>
             </th>
           </tr>
         </thead>
         <tbody v-if="isVisible(locais, index)">
           <template v-for="event in locais">
             <tr :key="event.id" @click="clickEvent(event)" v-if="isEventVisible(event, index)">
-              <td class="mdl-data-table__cell--non-numeric" v-html="event.content"></td>
+              <td class="mdl-data-table__cell--non-numeric">
+                <i class="material-icons">{{ eventIcon(event) }}</i>
+              </td>
               <td class="mdl-data-table__cell--non-numeric" :class="{'event-done': event.status == 1}">
                 <span>{{ event.start | formatDateTime }}</span>
               </td>
@@ -133,6 +137,25 @@ export default {
       }
       return 0
     },
+    localIcon (index) {
+      const event = this.groupByLocalEvents[index][0]
+      return this.eventIcon(event)
+    },
+    eventIcon (event) {
+      let _icon = ''
+      switch (event.tipo) {
+        case 1:
+          _icon = event.category == 'HCS' ? 'person' : 'local_pharmacy'
+          break
+        case 2:
+          _icon = 'bookmark'
+          break
+        case 3:
+          _icon = 'wifi'
+          break
+      }
+      return _icon
+    },
     groupBy (list, keyGetter) {
       const map = {}
       list.forEach((item) => {
@@ -177,5 +200,19 @@ export default {
     color: green;
     font-size: 20px;
     text-decoration: none;
+}
+.mdl-data-table-container .mdl-data-table th {
+  padding: 0 16px;
+}
+.flex-box {
+  display: flex;
+  color: #fff;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-box.flex-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 </style>

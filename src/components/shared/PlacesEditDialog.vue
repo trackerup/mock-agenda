@@ -17,12 +17,6 @@
         <main class="mdl-layout__content">
           <div class="page-content mdl-card">
             <template v-for="(item, index) in formData">
-              <div class="textfield" :key="index" v-if="item.type == 'text'">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                  <input ref="input-pesquisa" class="mdl-textfield__input" type="text" v-model="item.value" />
-                  <label class="mdl-textfield__label">{{ item.title }} </label>
-                </div>
-              </div>
               <div :key="index" v-if="item.type == 'period'">
                 <span class="orange">{{ item.title }}</span>
                 <div class="container-period">
@@ -38,6 +32,12 @@
                       <label class="mdl-textfield__label">{{ $t('Fim') }} </label>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="textfield" :key="index" v-else>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                  <input ref="input-pesquisa" class="mdl-textfield__input" type="item.type" v-model="item.value" />
+                  <label class="mdl-textfield__label">{{ item.title }} </label>
                 </div>
               </div>
             </template>
@@ -125,12 +125,12 @@ export default {
       },
       {
         title: 'Frequência visita (dias)',
-        type: 'text',
+        type: 'numeric',
         value: '1'
       },
       {
         title: 'Duração estimada',
-        type: 'text',
+        type: 'numeric',
         value: '15'
       },
       {
@@ -194,19 +194,7 @@ export default {
           duration: 4000
         })
       } else {
-        this.$emit('saveAppointment', {
-          id: null,
-          idLocal: 'Apontamentos',
-          start: this.startDateTime.replace('T', ' '),
-          end: this.endDateTime.replace('T', ' '),
-          title: this.comment ? this.comment : 'Apontamento',
-          content: '<i class="material-icons">bookmark</i>',
-          class: 'background-primary-color',
-          latitude: null,
-          longitude: null,
-          tipo: 2
-        }
-        )
+        this.$emit('savePlace', this.formData)
       }
     },
     setDates (dateStart, dateEnd) {

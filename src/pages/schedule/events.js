@@ -36,10 +36,10 @@ export default [
   },
   {
     id: 3,
-    idLocal: 'Médico 03',
+    idLocal: 'DROGARIA NOSSA SENHORA DE FATIMA',
     start: today + ' 10:30',
     end: today + ' 11:00',
-    title: 'Médico 03',
+    title: 'DROGARIA NOSSA SENHORA DE FATIMA',
     content: '<i class="material-icons">person</i>',
     class: 'background-secondary-color',
     latitude: -23.59388070622159,
@@ -120,7 +120,7 @@ export default [
   },
   {
     id: 9,
-    idLocal: 'Médico 03',
+    idLocal: 'DROGARIA NOSSA SENHORA DE FATIMA',
     start: today + ' 11:00',
     end: today + ' 12:00',
     title: 'Visita Virtal',
