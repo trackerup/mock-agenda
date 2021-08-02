@@ -16,13 +16,7 @@
         </header>
         <main class="mdl-layout__content">
           <div class="page-content">
-            <div class="textfield-with-icon">
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                <input ref="input-pesquisa" class="mdl-textfield__input" type="text" id="passwordInput" v-model="searchTerm">
-                <label class="mdl-textfield__label" for="passwordInput">{{ $t('Pesquisa') }} </label>
-              </div>
-              <i class="material-icons">search</i>
-            </div>
+            <EventListFilter v-on:input="value => searchTerm = value" />
             <EventList :events="events" :searching="searching" :searchTerm="searchTerm" v-on:on-event-click="clickEvent"
               v-on:openPlacesEditDialog="openPlacesEditDialog"></EventList>
           </div>
@@ -36,11 +30,12 @@
 <script>
 import { like } from '@/utils/'
 import EventList from './EventList'
+import EventListFilter from './EventListFilter'
 import PlacesEditDialog from '@/components/shared/PlacesEditDialog'
 
 export default {
   name: 'EventListDialog',
-  components: { EventList, PlacesEditDialog },
+  components: { EventList, PlacesEditDialog, EventListFilter },
   props: {
     events: {
       required: true
@@ -51,6 +46,7 @@ export default {
   },
   data: () => ({
     searchTerm: '',
+    filter: {},
     placesEditDialog: false,
     selectedLocal: null
   }),

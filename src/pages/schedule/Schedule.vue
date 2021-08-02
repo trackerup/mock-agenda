@@ -47,6 +47,7 @@
     :event="selectedEvent"
     :events="events"
     v-on:saveEvent="saveEvent"
+    v-on:updateEvent="updateEvent"
     v-on:cancel="closeDialogs"
     v-on:deleteSelectedEvent="deleteSelectedEvent"
     v-on:executeTask="executeTask"
@@ -176,7 +177,7 @@ export default {
         deletada: '0',
         deleted_at: null,
         destino: null,
-        endereco: 'Endereço',
+        endereco: this.selectedEvent.tipo == 3 ? 'VISITA VIRTUAL' : 'Endereço do cliente será exibido aqui',
         estimado: null,
         forms: '[]',
         formsExtra: '{}',
@@ -234,7 +235,7 @@ export default {
       this.events.push(event)
       this.closeDialogs()
     },
-    saveEvent (event) {
+    updateEvent (event) {
       this.events.forEach(ele => {
         if (ele.id == event.id) {
           ele.start = event.start
@@ -242,6 +243,10 @@ export default {
           ele.class = event.class
         }
       })
+      this.selectedEvent = event
+    },
+    saveEvent (event) {
+      this.updateEvent(event)
       this.closeDialogs()
     }
   }

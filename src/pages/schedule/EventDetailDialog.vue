@@ -10,10 +10,12 @@
                 {{ $t('Voltar') }}
               </button>
             </div>
-            <h5 class="pageTitle">{{ $t('Det. Evento') }}</h5>
-            <div class="flex-end" @click="reSchedule">
+            <h5 class="pageTitle">{{ $t('Evento') }}</h5>
+            <div class="flex-end" @click="reSchedule" v-if="event.status != 1">
               {{ $t('Reagendar') }}
               <i class="material-icons">event</i>
+            </div>
+            <div class="flex-end" v-else>
             </div>
           </div>
         </header>
@@ -32,10 +34,24 @@
               </span>
             </div>
             <div class="mdl-card__supporting-text mdl-card--expand">
-              <h4 v-if="!editing">
-                {{ event.start | formatDate }}<br />
-                {{ event.start | formatTime }} - {{ event.end | formatTime }}
-              </h4>
+              <div class="mdl-card__actions card-content" v-if="!editing">
+                <div class="flex-start" >
+                  <h4>
+                  {{ event.start | formatDate }}<br />
+                  {{ event.start | formatTime }} - {{ event.end | formatTime }}
+                  </h4>
+                </div>
+                <div class="flex-end eventType" v-if="event.tipo != 2">
+                  <button class="mdl-button" @click="setTipo(1)"  :class="{'orange': event.tipo == 1}">
+                    {{$t('Física')}}
+                    <i class="material-icons">home</i>
+                  </button>
+                  <button class="mdl-button" @click="setTipo(3)"  :class="{'orange': event.tipo == 3}">
+                    {{$t('Virtual')}}
+                    <i class="material-icons">wifi</i>
+                  </button>
+                </div>
+              </div>
               <div v-else>
                 <span class="orange">{{ $t('Nova data') }}</span>
                 <div class="textfield" >
@@ -79,13 +95,11 @@
               <div v-show="showMap && !execute && !editing" class="google-map" :ref="mapName"></div>
             </div>
             <div class="mdl-card__actions mdl-card--border">
-              <div class="flex-start" v-if="!execute && !editing && event.tipo != 2">
-                <button type="button" class="mdl-button orange" @click="prepareToExecute">{{ $t('Executar') }}</button>
+              <div class="flex-start" v-if="!execute && !editing && event.tipo != 2 && event.status != 1">
+                <button type="button" class="mdl-button orange" @click="$emit('executeTask')">{{ $t('Executar') }}</button>
               </div>
-              <div class="flex-start" v-if="execute">
-                <button type="button" class="mdl-button orange" @click="$emit('executeTask', 1)">{{ $t('Física') }}</button>
-                <div class="mdl-layout-spacer"></div>
-                <button type="button" class="mdl-button background-secondary-color" @click="$emit('executeTask', 2)">{{ $t('Virtual') }}</button>
+              <div class="flex-start" v-if="event.status == 1">
+                <i class="material-icons">check</i>
               </div>
               <div class="flex-start" v-if="editing">
                 <button type="button" class="mdl-button orange" @click="saveEvent">{{ $t('Salvar') }}</button>
@@ -175,6 +189,12 @@ export default {
         class: 'background-primary-color'
       }))
     },
+    setTipo (tipo) {
+      let editedEvent = Object.assign({}, this.event)
+      this.$emit('updateEvent', Object.assign(editedEvent, {
+        tipo: tipo
+      }))
+    },
     toogleMap () {
       this.showMap = !this.showMap
       if (this.showMap) {
@@ -242,11 +262,17 @@ export default {
 .mdl-card__actions {
   display: flex;
 }
-.mdl-card__title {
-    display: flex;
-    justify-content: space-between;
+.mdl-card__actions .flex-start h4 {
+  margin: 0;
 }
-
+.mdl-card__title {
+  display: flex;
+  justify-content: space-between;
+}
+.eventType {
+  flex-direction: column;
+  justify-content: flex-start;
+}
 .app-content .mdl-card.mdl-card-no-padding {
   padding: 0;
   border: solid 0px rgba(0, 0, 0, 0.12);

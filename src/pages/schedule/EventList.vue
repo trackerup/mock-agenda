@@ -16,7 +16,9 @@
           <template v-for="event in locais">
             <tr :key="event.id" @click="clickEvent(event)">
               <td class="mdl-data-table__cell--non-numeric" v-html="event.content"></td>
-              <td class="mdl-data-table__cell--non-numeric">{{ event.start | formatDateTime }}</td>
+              <td class="mdl-data-table__cell--non-numeric" :class="{'event-done': event.status == 1}">
+                <span>{{ event.start | formatDateTime }}</span>
+              </td>
             </tr>
           </template>
         </tbody>
@@ -83,5 +85,15 @@ export default {
 }
 .mdl-data-table-container {
   padding-bottom: 50px;
+}
+.event-done span {
+  text-decoration: line-through;
+}
+.event-done:after {
+    font-family: "Material Icons";
+    content: "\e876";
+    color: green;
+    font-size: 20px;
+    text-decoration: none;
 }
 </style>
