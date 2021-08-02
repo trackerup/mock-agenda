@@ -162,8 +162,8 @@ export default {
       this.$root.cardContent = false
     },
     executeTask () {
-      let start = new Date(this.selectedEvent.start)
-      let end = new Date(this.selectedEvent.end)
+      let start = new Date(this.selectedEvent.start.replace(' ', 'T'))
+      let end = new Date(this.selectedEvent.end.replace(' ', 'T'))
 
       this.task = {
         agendada: null,

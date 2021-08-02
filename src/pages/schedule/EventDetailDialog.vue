@@ -152,9 +152,9 @@ export default {
     execute: false
   }),
   beforeMount () {
-    this.date = new Date(this.event.start).format()
-    this.start = new Date(this.event.start).formatTime()
-    this.end = new Date(this.event.end).formatTime()
+    this.date = new Date(this.event.start.replace(' ', 'T')).format()
+    this.start = new Date(this.event.start.replace(' ', 'T')).formatTime()
+    this.end = new Date(this.event.end.replace(' ', 'T')).formatTime()
   },
   computed: {
     ...mapGetters({
@@ -170,10 +170,10 @@ export default {
       }
     },
     timeFrom () {
-      return (new Date(this.event.start).getHours() - 1) * 60
+      return (new Date(this.event.start.replace(' ', 'T')).getHours() - 1) * 60
     },
     timeTo () {
-      return (new Date(this.event.end).getHours() + 1) * 60
+      return (new Date(this.event.end.replace(' ', 'T')).getHours() + 1) * 60
     }
   },
   methods: {
