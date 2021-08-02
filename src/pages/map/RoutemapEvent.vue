@@ -88,11 +88,11 @@ export default {
       }
 
       var tasks = this.tasks.filter(ele => {
-        return (new Date(ele.start).toJSON().slice(0, 10) == _self.today) && ele.tipo == 1
+        return (new Date(ele.start.replace(' ', 'T')).toJSON().slice(0, 10) == _self.today) && ele.tipo == 1
       })
 
       tasks = tasks.sort(function (a, b) {
-        return new Date(b.start) - new Date(a.start)
+        return new Date(b.start.replace(' ', 'T')) - new Date(a.start.replace(' ', 'T'))
       })
       var color = ''
       var i
