@@ -28,19 +28,55 @@
                   <label class="mdl-textfield__label" for="comment">{{ $t('Comentário') }} </label>
                 </div>
               </div>
-              <div class="textfield-with-icon">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                  <input ref="input-pesquisa" class="mdl-textfield__input" type="datetime-local" id="startDateTime" v-model="startDateTime" />
-                  <label class="mdl-textfield__label" for="startDateTime">{{ $t('Data Inícial') }} </label>
+              <div class="mdl-grid center">
+                <div class="textfield-with-icon">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                    <input ref="input-pesquisa" class="mdl-textfield__input" type="date" id="startDate" v-model="startDate" />
+                    <label class="mdl-textfield__label" for="startDate">{{ $t('Data') }} </label>
+                  </div>
+                  <i class="material-icons">calendar</i>
                 </div>
-                <i class="material-icons">calendar</i>
+                <div class="flex-end" v-if="!repeat">
+                  <button class="mdl-button mdl-button orange"  @click="prepareRepeat" >
+                    {{ $t('Repetir') }}
+                  </button>
+                </div>
+                <div class="textfield-with-icon" v-else>
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                    <input ref="input-pesquisa" class="mdl-textfield__input" type="date" id="endDate" v-model="endDate" @change="changeEndDateTime" />
+                    <label class="mdl-textfield__label" for="endDate">{{ $t('Data Fim') }} </label>
+                  </div>
+                  <i class="material-icons">calendar</i>
+                </div>
               </div>
-              <div class="textfield-with-icon">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                  <input ref="input-pesquisa" class="mdl-textfield__input" type="datetime-local" id="endDateTime" v-model="endDateTime" />
-                  <label class="mdl-textfield__label" for="endDateTime">{{ $t('Data Final') }} </label>
+              <div class="mdl-grid center" v-if="repeat">
+                <template v-for="(tag, index) in ['S','T','Q','Q','S']">
+                  <span :key="index" class="mdl-chip" :class="{'mdl-chip-selected': recurring[index]}" @click="setRecurring(index)">
+                      <span class="mdl-chip__text" >{{tag}}</span>
+                  </span>
+                </template>
+              </div>
+              <div class="container-period">
+                <div class="textfield">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                    <input ref="input-pesquisa" class="mdl-textfield__input" type="time" id="startDateTime" v-model="startTime" />
+                    <label class="mdl-textfield__label" for="startDateTime">{{ $t('Início') }} </label>
+                  </div>
                 </div>
-                <i class="material-icons">calendar</i>
+                <div class="textfield">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
+                    <input ref="input-pesquisa" class="mdl-textfield__input" type="time" id="endDateTime" v-model="endTime" />
+                    <label class="mdl-textfield__label" for="endDateTime">{{ $t('Fim') }} </label>
+                  </div>
+                </div>
+              </div>
+              <div class="mdl-grid center">
+                <template v-for="tag in tags">
+                  <span :key="tag.id" class="mdl-chip" :class="{'mdl-chip-selected': tag.selected}" @click="tag.selected = !tag.selected">
+                      <a v-if="tag.icon" class="mdl-chip__action"><i class="material-icons">{{tag.icon}}</i></a>
+                      <span class="mdl-chip__text" >{{tag.title}}</span>
+                  </span>
+                </template>
               </div>
               <button class="mdl-button mdl-button orange" @click="selectGeo" v-if="!selectingGeo">
                 {{ $t('Definir Local') }}
@@ -79,16 +115,28 @@ export default {
     mapName: 'task-map',
     map: null,
     mapOptions: null,
-    startDateTime: null,
-    endDateTime: null,
+    startDate: null,
+    endDate: null,
+    startTime: null,
+    endTime: null,
+    repeat: false,
+    recurring: [false, false, false, false, false],
     comment: '',
     selectingGeo: false,
-    location: false
+    location: false,
+    tags: [
+      { title: 'Reunião Gerencia', selected: false, id: 'Reunião' },
+      { title: 'Médico', selected: false, id: 'Médico' },
+      { title: 'Pessoal', selected: false, id: 'Pessoal' },
+      { title: 'Viagem', selected: false, id: 'Viagem' },
+      { title: 'Hotel', selected: false, id: 'Hotel' },
+      { title: 'Outros', selected: false, id: 'Outros' }
+    ]
   }),
   beforeMount () {
     const _date = this.roundTimeQuarterHour(this.appointmentStartTime)
-    const _dateEnd = new Date(_date.getTime() + 30 * 60000)
-    this.setDates(_date, _dateEnd)
+    const _endDate = new Date(_date.getTime() + 30 * 60000)
+    this.setDates(_date, _endDate)
     this.comment = ''
     this.selectingGeo = false
   },
@@ -102,53 +150,87 @@ export default {
       return timeToReturn
     },
     saveAppointment () {
-      let _date = new Date(this.startDateTime)
-      let _dateEnd = new Date(this.endDateTime)
-      if (!_date || !_dateEnd || _date > _dateEnd) {
+      let _date = new Date(this.startDate)
+      let _endDate = new Date(this.endDate)
+      if (!_date || !_endDate || _date > _endDate) {
         this.$bus.$emit('showSnackBar', {
           message: this.$t('Data e horário inválidos, data inicial deve ser menor que data final!'),
           duration: 4000
         })
       } else {
-        this.$emit('saveAppointment', {
-          id: null,
-          idLocal: 'Apontamentos',
-          start: this.startDateTime.replace('T', ' '),
-          end: this.endDateTime.replace('T', ' '),
-          title: this.comment ? this.comment : 'Apontamento',
-          content: '<i class="material-icons">bookmark</i>',
-          class: 'background-primary-color',
-          latitude: this.location ? this.location.lat() : null,
-          longitude: this.location ? this.location.lng() : null,
-          tipo: 2
-        })
+        if (this.repeat) {
+          let _date = new Date(this.startDate + 'T00:00:00')
+          let _endDate = new Date(this.endDate + 'T00:00:00')
+          while (_date.getTime() <= _endDate.getTime()) {
+            const _day = _date.getDay()
+            if (this.recurring[_day - 1]) {
+              this.emitSaveAppointment(_date.format())
+            }
+            _date.setDate(_date.getDate() + 1)
+          }
+        } else {
+          this.emitSaveAppointment(this.startDate)
+        }
       }
     },
-    setDates (dateStart, dateEnd) {
-      this.startDateTime = `${dateStart.format()}T${dateStart.formatTime()}`
-      this.endDateTime = `${dateEnd.format()}T${dateEnd.formatTime()}`
+    emitSaveAppointment (date) {
+      this.$emit('saveAppointment', {
+        id: null,
+        idLocal: 'Apontamentos',
+        start: `${date} ${this.startTime}`,
+        end: `${date} ${this.endTime}`,
+        title: this.comment ? this.comment : 'Apontamento',
+        content: '<i class="material-icons">bookmark</i>',
+        class: 'background-primary-color',
+        latitude: this.location ? this.location.lat() : null,
+        longitude: this.location ? this.location.lng() : null,
+        tipo: 2,
+        tags: this.tags.filter(ele => ele.selected)
+      })
     },
-    changeDateStartTime () {
-      let _date = new Date(this.startDateTime)
-      let _dateEnd = new Date(this.endDateTime)
-      if (_date >= _dateEnd) {
-        _dateEnd = new Date(_date.getTime() + 30 * 60000)
-      }
-      this.setDates(_date, _dateEnd)
+    setDates (startDate, endDate) {
+      this.startDate = `${startDate.format()}`
+      this.startTime = `${startDate.formatTime()}`
+      this.endDate = `${endDate.format()}`
+      this.endTime = `${endDate.formatTime()}`
     },
-    changeDateEndTime () {
-      let _date = new Date(this.startDateTime)
-      let _dateEnd = new Date(this.endDateTime)
-      if (_date >= _dateEnd) {
-        _date = new Date(_dateEnd.getTime() - 30 * 60000)
+    changeEndDateTime () {
+      let _date = new Date(this.startDate + 'T00:00:00')
+      let _endDate = new Date(this.endDate + 'T00:00:00')
+      this.recurring = [false, false, false, false, false, false, false]
+      while (_date.getTime() <= _endDate.getTime()) {
+        const _day = _date.getDay()
+        if (_day != 0 && _day != 6) {
+          this.recurring[_date.getDay() - 1] = true
+        }
+        _date.setDate(_date.getDate() + 1)
       }
-      this.setDates(_date, _dateEnd)
+      this.$forceUpdate()
     },
     selectGeo () {
       this.selectingGeo = true
     },
     confirmPosMap (location) {
       this.location = location.result.geometry.location
+    },
+    setRecurring (index) {
+      this.recurring[index] = !this.recurring[index]
+      let _date = new Date(this.startDate + 'T00:00:00')
+      let _endDate = new Date(this.endDate + 'T00:00:00')
+      while (_date.getDay() < index + 1) {
+        const _day = _date.getDay()
+        if (_day != 0 && _day != 6) {
+          _endDate = _endDate.getTime() < _date.getTime() ? _date : _endDate
+        }
+        _date.setDate(_date.getDate() + 1)
+      }
+      this.endDate = _endDate.format()
+      this.$forceUpdate()
+    },
+    prepareRepeat () {
+      const _startDate = new Date(this.startDate)
+      this.repeat = true
+      this.setRecurring(_startDate.getDay())
     }
   }
 }
@@ -161,5 +243,22 @@ export default {
 .app-content .mdl-card.mdl-card-no-padding {
   padding: 0;
   border: solid 0px rgba(0, 0, 0, 0.12);
+}
+.app-content .mdl-chip.mdl-chip-selected {
+  background: var(--primaryColor);
+  color: #fff
+}
+.center {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.container-period {
+  display: flex;
+  justify-content: space-between;
+}
+.container-period .textfield {
+  width: 45%;
 }
 </style>

@@ -17,6 +17,7 @@
       :active-view="activeView"
       :events="events"
       events-count-on-year-view
+      show-all-day-events
       events-on-month-view="short"
       :on-event-click="onEventClick"
       :clickToNavigate="true"
@@ -232,6 +233,7 @@ export default {
       this.$root.cardContent = this.searching
     },
     saveAppointment (event) {
+      event.id = this.events.length + 1
       this.events.push(event)
       this.closeDialogs()
     },
