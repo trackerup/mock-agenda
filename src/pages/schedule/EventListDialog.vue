@@ -11,13 +11,23 @@
               </button>
             </div>
             <h5 class="pageTitle">{{ $t('Agenda') }}</h5>
-            <div class="flex-end"></div>
+            <div class="flex-end">
+              <button class="mdl-button mld-button-icon-text button-back" v-if="!filtering" @click="filtering = !filtering" >
+                {{$t('Filtrar')}}
+                <span class="material-icons">filter_list</span>
+              </button>
+              <button class="mdl-button mld-button-icon-text button-back" v-else @click="filtering = !filtering" >
+                {{$t('Buscar')}}
+                <span class="material-icons">search</span>
+              </button>
+            </div>
           </div>
         </header>
         <main class="mdl-layout__content">
           <div class="page-content">
-            <EventListFilter v-on:input="value => searchTerm = value" />
-            <EventList :events="events" :searching="searching" :searchTerm="searchTerm" v-on:on-event-click="clickEvent"
+            <EventListSearch v-on:input="value => searchTerm = value" v-if="!filtering" />
+            <EventListFilter :filter="filter" :filtering="filtering" v-on:doFilter="doFilter" />
+            <EventList :events="events" :searching="searching" :searchTerm="searchTerm" :filter="filter" v-on:on-event-click="clickEvent"
               v-on:openPlacesEditDialog="openPlacesEditDialog"></EventList>
           </div>
         </main>
@@ -31,11 +41,12 @@
 import { like } from '@/utils/'
 import EventList from './EventList'
 import EventListFilter from './EventListFilter'
+import EventListSearch from './EventListSearch'
 import PlacesEditDialog from '@/components/shared/PlacesEditDialog'
 
 export default {
   name: 'EventListDialog',
-  components: { EventList, PlacesEditDialog, EventListFilter },
+  components: { EventList, PlacesEditDialog, EventListSearch, EventListFilter },
   props: {
     events: {
       required: true
@@ -46,7 +57,16 @@ export default {
   },
   data: () => ({
     searchTerm: '',
-    filter: {},
+    filtering: false,
+    filter: {
+      frequencia: false,
+      near_me: false,
+      fisica: false,
+      virtual: false,
+      hcs: false,
+      pdv: false,
+      appointment: false
+    },
     placesEditDialog: false,
     selectedLocal: null
   }),
@@ -87,6 +107,10 @@ export default {
     },
     closePlacesEditDialog () {
       this.placesEditDialog = false
+    },
+    doFilter (filter) {
+      this.filter[filter] = !this.filter[filter]
+      this.$forceUpdate()
     }
   }
 }
@@ -95,5 +119,8 @@ export default {
 <style lang="scss">
 .mdl-data-table th {
   color: white;
+}
+.mdl-layout__header-row .flex-end {
+  padding-right: 15px;
 }
 </style>
