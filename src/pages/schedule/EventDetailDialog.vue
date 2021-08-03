@@ -53,22 +53,22 @@
               </div>
               <div v-else>
                 <span class="orange">{{ $t('Nova data') }}</span>
-                <div class="textfield">
+                <div class="textfield" @click="$refs.date.focus()">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input ref="input-pesquisa" class="mdl-textfield__input" type="date" v-model="date" />
+                    <input class="mdl-textfield__input" type="date" ref="date" v-model="date" />
                     <label class="mdl-textfield__label">{{ $t('Dia') }} </label>
                   </div>
                 </div>
                 <div class="container-period">
-                  <div class="textfield">
+                  <div class="textfield" @click="$refs.start.focus()">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                      <input ref="input-pesquisa" class="mdl-textfield__input" type="time" v-model="start" />
+                      <input class="mdl-textfield__input" type="time" ref="start" v-model="start" />
                       <label class="mdl-textfield__label">{{ $t('Início') }} </label>
                     </div>
                   </div>
-                  <div class="textfield">
+                  <div class="textfield" @click="$refs.end.focus()">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                      <input ref="input-pesquisa" class="mdl-textfield__input" type="time" v-model="end" />
+                      <input class="mdl-textfield__input" type="time" ref="end" v-model="end" />
                       <label class="mdl-textfield__label">{{ $t('Fim') }} </label>
                     </div>
                   </div>

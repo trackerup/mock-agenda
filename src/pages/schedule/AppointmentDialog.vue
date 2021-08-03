@@ -19,19 +19,20 @@
             <div class="mdl-card__title background-primary-color">
               <h2 class="mdl-card__title-text">
                 {{ $t('Novo apontamento') }}
+                <i class="material-icons">bookmark</i>
               </h2>
             </div>
             <div class="mdl-card__supporting-text mdl-card--expand">
               <div class="textfield">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                  <input ref="input-pesquisa" class="mdl-textfield__input" type="text" id="comment" v-model="comment" />
+                  <input class="mdl-textfield__input" type="text" id="comment" v-model="comment" />
                   <label class="mdl-textfield__label" for="comment">{{ $t('Comentário') }} </label>
                 </div>
               </div>
-              <div class="mdl-grid center">
-                <div class="textfield-with-icon">
+              <div class="mdl-grid container-between">
+                <div class="textfield-with-icon" @click="$refs.startDate.focus()" >
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input ref="input-pesquisa" class="mdl-textfield__input" type="date" id="startDate" v-model="startDate" />
+                    <input class="mdl-textfield__input" type="date" ref="startDate" id="startDate" v-model="startDate" />
                     <label class="mdl-textfield__label" for="startDate">{{ $t('Data') }} </label>
                   </div>
                   <i class="material-icons">calendar</i>
@@ -39,11 +40,12 @@
                 <div class="flex-end" v-if="!repeat">
                   <button class="mdl-button mdl-button orange"  @click="prepareRepeat" >
                     {{ $t('Repetir') }}
+                    <i class="material-icons">repeat</i>
                   </button>
                 </div>
-                <div class="textfield-with-icon" v-else>
+                <div class="textfield-with-icon" v-else  @click="$refs.endDate.focus()" >
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input ref="input-pesquisa" class="mdl-textfield__input" type="date" id="endDate" v-model="endDate" @change="changeEndDateTime" />
+                    <input  class="mdl-textfield__input" type="date" ref="endDate" id="endDate" v-model="endDate" @change="changeEndDateTime" />
                     <label class="mdl-textfield__label" for="endDate">{{ $t('Data Fim') }} </label>
                   </div>
                   <i class="material-icons">calendar</i>
@@ -56,18 +58,20 @@
                   </span>
                 </template>
               </div>
-              <div class="container-period">
-                <div class="textfield">
+              <div class="mdl-grid container-between">
+                <div class="textfield-with-icon" @click="$refs.startDateTime.focus()">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input ref="input-pesquisa" class="mdl-textfield__input" type="time" id="startDateTime" v-model="startTime" />
+                    <input  class="mdl-textfield__input" type="time" ref="startDateTime" id="startDateTime" v-model="startTime" />
                     <label class="mdl-textfield__label" for="startDateTime">{{ $t('Início') }} </label>
                   </div>
+                  <i class="material-icons">calendar</i>
                 </div>
-                <div class="textfield">
+                <div class="textfield-with-icon" @click="$refs.endDateTime.focus()">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input ref="input-pesquisa" class="mdl-textfield__input" type="time" id="endDateTime" v-model="endTime" />
+                    <input  class="mdl-textfield__input" type="time" ref="endDateTime" id="endDateTime" v-model="endTime" />
                     <label class="mdl-textfield__label" for="endDateTime">{{ $t('Fim') }} </label>
                   </div>
+                  <i class="material-icons">calendar</i>
                 </div>
               </div>
               <div class="mdl-grid center">
@@ -78,9 +82,13 @@
                   </span>
                 </template>
               </div>
-              <button class="mdl-button mdl-button orange" @click="selectGeo" v-if="!selectingGeo">
-                {{ $t('Definir Local') }}
-              </button>
+              <div class="mdl-grid container-between" v-if="!selectingGeo">
+                <span></span>
+                <button class="mdl-button mdl-button orange" @click="selectGeo" >
+                  {{ $t('Definir Local') }}
+                  <i class="material-icons">map</i>
+                </button>
+              </div>
               <div v-show="selectingGeo">
                 <Map :search="true" ref="Map" v-on:confirmPos="confirmPosMap" />
               </div>
@@ -254,11 +262,13 @@ export default {
     flex-wrap: wrap;
     justify-content: space-evenly;
 }
-.container-period {
+.container-between {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
-.container-period .textfield {
-  width: 45%;
+.container-between .textfield-with-icon {
+  width: 49%;
 }
 </style>
