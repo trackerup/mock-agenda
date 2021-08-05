@@ -26,12 +26,12 @@ export default {
     filters: [
       {
         key: 'frequencia',
-        title: 'Alta Frequencia',
+        title: 'Alta frequência',
         icon: 'report'
       },
       {
         key: 'near_me',
-        title: 'Perto de min',
+        title: 'Perto de mim',
         icon: 'near_me'
       },
       {
@@ -41,7 +41,7 @@ export default {
       },
       {
         key: 'virtual',
-        title: 'Vituais',
+        title: 'Virtuais',
         icon: 'wifi'
       },
       {

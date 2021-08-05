@@ -35,7 +35,6 @@
                     <input class="mdl-textfield__input" type="date" ref="startDate" id="startDate" v-model="startDate" />
                     <label class="mdl-textfield__label" for="startDate">{{ $t('Data') }} </label>
                   </div>
-                  <i class="material-icons">calendar</i>
                 </div>
                 <div class="flex-end" v-if="!repeat">
                   <button class="mdl-button mdl-button orange"  @click="prepareRepeat" >
@@ -48,7 +47,6 @@
                     <input  class="mdl-textfield__input" type="date" ref="endDate" id="endDate" v-model="endDate" @change="changeEndDateTime" />
                     <label class="mdl-textfield__label" for="endDate">{{ $t('Data Fim') }} </label>
                   </div>
-                  <i class="material-icons">calendar</i>
                 </div>
               </div>
               <div class="mdl-grid center" v-if="repeat">
@@ -61,17 +59,15 @@
               <div class="mdl-grid container-between">
                 <div class="textfield-with-icon" @click="$refs.startDateTime.focus()">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input  class="mdl-textfield__input" type="time" ref="startDateTime" id="startDateTime" v-model="startTime" />
+                    <input  class="mdl-textfield__input" type="time" name="startDateTime" ref="startDateTime" id="startDateTime" v-model="startTime" />
                     <label class="mdl-textfield__label" for="startDateTime">{{ $t('Início') }} </label>
                   </div>
-                  <i class="material-icons">calendar</i>
                 </div>
                 <div class="textfield-with-icon" @click="$refs.endDateTime.focus()">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" v-mdl>
-                    <input  class="mdl-textfield__input" type="time" ref="endDateTime" id="endDateTime" v-model="endTime" />
+                    <input  class="mdl-textfield__input" type="time" name="endDateTime" ref="endDateTime" id="endDateTime" v-model="endTime" />
                     <label class="mdl-textfield__label" for="endDateTime">{{ $t('Fim') }} </label>
                   </div>
-                  <i class="material-icons">calendar</i>
                 </div>
               </div>
               <div class="mdl-grid center">
